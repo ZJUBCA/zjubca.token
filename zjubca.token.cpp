@@ -50,7 +50,7 @@ namespace eosio {
             s.supply += quantity;
         });
 
-        add_balance(st.issuer, quantity, st.issuer);
+        add_balance(st.issuer, quantity);
 
         if (to != st.issuer) {
             SEND_INLINE_ACTION(*this, transfer, {st.issuer, N(active)}, {st.issuer, to, quantity, memo});
@@ -79,7 +79,7 @@ namespace eosio {
 
 
         sub_balance(from, quantity);
-        add_balance(to, quantity, from);
+        add_balance(to, quantity);
     }
 
     void token::sub_balance(account_name owner, asset value) {
@@ -92,17 +92,17 @@ namespace eosio {
         if (from.balance.amount == value.amount) {
             from_acnts.erase(from);
         } else {
-            from_acnts.modify(from, owner, [&](auto &a) {
+            from_acnts.modify(from, 0, [&](auto &a) {
                 a.balance -= value;
             });
         }
     }
 
-    void token::add_balance(account_name owner, asset value, account_name ram_payer) {
+    void token::add_balance(account_name owner, asset value) {
         accounts to_acnts(_self, owner);
         auto to = to_acnts.find(value.symbol.name());
         if (to == to_acnts.end()) {
-            to_acnts.emplace(ram_payer, [&](auto &a) {
+            to_acnts.emplace(_self, [&](auto &a) {
                 a.balance = value;
             });
         } else {

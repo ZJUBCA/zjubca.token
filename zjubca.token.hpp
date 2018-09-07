@@ -56,7 +56,7 @@ namespace eosio {
 
         void sub_balance(account_name owner, asset value);
 
-        void add_balance(account_name owner, asset value, account_name ram_payer);
+        void add_balance(account_name owner, asset value);
 
     public:
         struct transfer_args {
