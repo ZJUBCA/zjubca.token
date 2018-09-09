@@ -9,74 +9,77 @@
 
 #include <string>
 
+using namespace eosio;
+
 namespace eosiosystem {
-    class system_contract;
+   class system_contract;
 }
 
-namespace eosio {
+namespace zjubca {
 
-    using std::string;
+   using std::string;
 
-    class token : public contract {
-    public:
-        token(account_name self) : contract(self) {}
+   class token : public contract {
+      public:
+         token( account_name self ):contract(self){}
 
-        void create(account_name issuer,
-                    asset maximum_supply);
+         void create( account_name issuer,
+                      asset        maximum_supply);
 
-        void issue(account_name to, asset quantity, string memo);
+         void issue( account_name to, asset quantity, string memo );
 
-        void transfer(account_name from,
-                      account_name to,
-                      asset quantity,
-                      string memo);
+         void transfer( account_name from,
+                        account_name to,
+                        asset        quantity,
+                        string       memo );
+      
+      
+         inline asset get_supply( symbol_name sym )const;
+         
+         inline asset get_balance( account_name owner, symbol_name sym )const;
 
+      private:
+         struct account {
+            asset    balance;
 
-        inline asset get_supply(symbol_name sym) const;
+            uint64_t primary_key()const { return balance.symbol.name(); }
+         };
 
-        inline asset get_balance(account_name owner, symbol_name sym) const;
+         struct currency_stats {
+            asset          supply;
+            asset          max_supply;
+            account_name   issuer;
 
-    private:
-        struct account {
-            asset balance;
+            uint64_t primary_key()const { return supply.symbol.name(); }
+         };
 
-            uint64_t primary_key() const { return balance.symbol.name(); }
-        };
+         typedef multi_index<N(accounts), account> accounts;
+         typedef multi_index<N(stat), currency_stats> stats;
 
-        struct currency_stats {
-            asset supply;
-            asset max_supply;
-            account_name issuer;
+         void sub_balance( account_name owner, asset value );
+         void add_balance( account_name owner, asset value );
 
-            uint64_t primary_key() const { return supply.symbol.name(); }
-        };
+      public:
+         struct transfer_args {
+            account_name  from;
+            account_name  to;
+            asset         quantity;
+            string        memo;
+         };
+   };
 
-        typedef eosio::multi_index<N(accounts), account> accounts;
-        typedef eosio::multi_index<N(stat), currency_stats> stats;
+   asset token::get_supply( symbol_name sym )const
+   {
+      stats statstable( _self, sym );
+      const auto& st = statstable.get( sym );
+      return st.supply;
+   }
 
-        void sub_balance(account_name owner, asset value);
+   asset token::get_balance( account_name owner, symbol_name sym )const
+   {
+      accounts accountstable( _self, owner );
+      const auto& ac = accountstable.get( sym );
+      return ac.balance;
+   }
 
-        void add_balance(account_name owner, asset value);
-
-    public:
-        struct transfer_args {
-            account_name from;
-            account_name to;
-            asset quantity;
-            string memo;
-        };
-    };
-
-    asset token::get_supply(symbol_name sym) const {
-        stats statstable(_self, sym);
-        const auto &st = statstable.get(sym);
-        return st.supply;
-    }
-
-    asset token::get_balance(account_name owner, symbol_name sym) const {
-        accounts accountstable(_self, owner);
-        const auto &ac = accountstable.get(sym);
-        return ac.balance;
-    }
-
-} /// namespace eosio
+} /// namespace zjubca

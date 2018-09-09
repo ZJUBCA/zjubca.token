@@ -5,7 +5,7 @@
 
 #include "zjubca.token.hpp"
 
-namespace eosio {
+namespace zjubca {
 
     void token::create(account_name issuer,
                        asset maximum_supply) {
@@ -112,6 +112,6 @@ namespace eosio {
         }
     }
 
-} /// namespace eosio
+} /// namespace zjubca
 
-EOSIO_ABI( eosio::token, (create)(issue)(transfer))
+EOSIO_ABI( zjubca::token, (create)(issue)(transfer))
