@@ -2,7 +2,7 @@
 Token model design and token contract.
 
 ## How to build
-Reference to [eosio-dapp-boilerplate]().
+Reference to [eosio-dapp-boilerplate](https://github.com/Blockchain-zju/eosio-dapp-boilerplate).
 
 ## 前置知识
 
