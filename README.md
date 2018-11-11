@@ -1,6 +1,9 @@
 # zjubca-token
 Token model design and token contract.
 
+## How to build
+Reference to [eosio-dapp-boilerplate]().
+
 ## 前置知识
 
 ### 基本概念建立
